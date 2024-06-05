@@ -1,40 +1,47 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+from Chess_back import islegal
 
 # Size of each square
-size = 60
+size = 80
 
 # Initialize the global variables
 current_image = None
 start_x = 0
 start_y = 0
+prev_x = 0
+prev_y = 0
 
 def on_image_click(event):
-    global current_image, start_x, start_y
+    global current_image, prev_x, prev_y, start_x, start_y
     # Get the ID of the currently clicked image
     current_image = event.widget.find_withtag("current")[0]
     # Store the initial position of the mouse click
-    start_x = event.x
-    start_y = event.y
+    start_x = (event.x//size)*size
+    start_y = (event.y//size)*size
+    prev_x = event.x
+    prev_y = event.y
 def on_image_drag(event):
-    global start_x, start_y
+    global prev_x, prev_y
     # Calculate the distance moved
-    dx = event.x - start_x
-    dy = event.y - start_y
+    dx = event.x - prev_x
+    dy = event.y - prev_y
     # Move the current image by the distance moved
     canvas.move(current_image, dx, dy)
     # Update the starting position for the next movement
-    start_x = event.x
-    start_y = event.y
+    prev_x = event.x
+    prev_y = event.y
 def on_image_release(event):
-    global start_x, start_y
-    canvas.moveto(current_image, (start_x//size)*size, (start_y//size)*size)
+    if 0 <= event.x and event.x <= 8*size and 0 <= event.y and event.y <= 8*size: #and islegal(start_x//size, start_y//size, (event.x//size)*size, (event.y//size)*size):
+        canvas.moveto(current_image, (event.x//size)*size, (event.y//size)*size)
+    else:
+        canvas.moveto(current_image, start_x, start_y)
 
 root = tk.Tk()
 root.title("Multiple Drag and Drop Images with Transparency")
-root.geometry("800x600")
+root.geometry("800x800")
 
-image_paths = ["Chess/pieces/bbishop.png","Chess/pieces/wbishop.png"]  # Add more paths as needed
+image_paths = ["pieces/bbishop.png","pieces/wbishop.png"]  # Add more paths as needed
 images = [Image.open(path).convert("RGBA").resize((size,size)) for path in image_paths]
 tk_images = [ImageTk.PhotoImage(image) for image in images]
 
