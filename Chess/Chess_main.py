@@ -1,16 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from Chess_back import islegal
-
-# Size of each square
-size = 80
-
-# Initialize the global variables
-current_image = None
-start_x = 0
-start_y = 0
-prev_x = 0
-prev_y = 0
+from Chess_back import *
 
 def on_image_click(event):
     global current_image, prev_x, prev_y, start_x, start_y
@@ -37,9 +27,19 @@ def on_image_release(event):
     else:
         canvas.moveto(current_image, start_x, start_y)
 
+# Size of each square
+size = 80
+
+# Initialize the global variables
+current_image = None
+start_x = 0
+start_y = 0
+prev_x = 0
+prev_y = 0
+
 root = tk.Tk()
-root.title("Multiple Drag and Drop Images with Transparency")
-root.geometry("800x800")
+root.title("Chess")
+root.geometry(str(size*8+5)+'x'+str(size*8+5))
 
 image_paths = ["pieces/bbishop.png","pieces/wbishop.png"]  # Add more paths as needed
 images = [Image.open(path).convert("RGBA").resize((size,size)) for path in image_paths]
@@ -49,14 +49,12 @@ canvas = tk.Canvas(root, width=size*8, height=size*8)
 canvas.pack()
 
 # Draw the squares of the board
-color = True
 for x in range(8):
     for y in range(8):
         if (x+y)%2 != 0:
             canvas.create_rectangle(x*size, y*size, x*size+size, y*size+size, fill='white')
         else:
             canvas.create_rectangle(x*size, y*size, x*size+size, y*size+size, fill='brown')
-        color = not color
 
 # Place the images on the canvas and keep references to the image objects
 image_ids = [canvas.create_image(100 + i * 200, 100, anchor=tk.NW, image=tk_image) for i, tk_image in enumerate(tk_images)]
